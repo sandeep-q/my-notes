@@ -1,0 +1,5 @@
+#!/bin/bash
+
+/tini -- /usr/local/bin/docker-entrypoint.sh
+
+echo "All setup done for Elastic Search container"
