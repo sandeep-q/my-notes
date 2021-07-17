@@ -1,0 +1,421 @@
+to use vue, you need declaration in your html file before you app's js files which will use vue framework:
+  <script src="https://unpkg.com/vue@next" defer></script>
+
+interpolation - replacing the plain text between html tags with the data or method elements of vue app, or simple java script
+  <p>{{ dataElementFromVueApp }}</p>
+  <p>{{ methodElementFromVueApp() }}</p>
+  <p>Math.random()</p>
+
+v-bind - replacing the attribute with the data elements of vue app
+  <p>Learn more about vue <a v-bind:href="vueLink">here</a></p>
+
+using "this" keyword you can access the data and methods from vue global object
+
+v-html - will interpret the content returned from vue app as html content
+
+v-on - is to bind the events to an element
+  <button v-on:click="counter++">Add</button>
+  here counter is a data element in vue
+  also you can point to the vue app's methods where you have code to increase counter value
+  <button v-on:click="add()">Add</button>
+  or
+  <button v-on:click="add">Add</button>
+
+Vue automatically renders the page when a data element changes, this is an important feature, since this who process works as Vue's default behaviour
+
+We can use native event object by 
+  either giving method name with out braces like <button v-on:click="add">Add</button>, then add a parameter for add function, like add(event) in vue method
+  or giving method name with braces and passing event arg like <button v-on:click="add($event)">Add</button>, then add a parameter for add function, like add(event) in vue method
+
+we can use event modifiers by providing which modifier you want to control,
+  <input type="text" v-on:keyup.enter="methodname" />
+  here keyup event is only triggered when you hit ENTER key
+
+to avoid vue to automatically renders the page when data element changes,
+  <p v-once>{{ dataElementFromVueApp }}</p>
+  here v-once will make sure the initial state of the vue data element is preserved by only rendering it one time
+
+data binding + event binding = two way binding
+  i.e., you can listen the input event and update the data object, also what ever the data object have is returned back to the element
+  <input type="text" v-model="dataElementFromVueApp" />
+  here this is equals to v-bind + v-on on the element
+  <input type="text" v-bind:value="DataElementXYZ" v-on:input="methodToUpdateDataElementXYZ" />
+
+computed properties are another features like data and methods, you need to declare in a seperate block
+  biggest gain by using computed properties are, they are just like methods but they only get executed if the underlying data element changes, this will avoid unncessary executions
+  you should never call computed properties using braces
+
+watchers are just like methods, that are created with the same name of data elements or computed properties, so this watcher method gets executed only when the referred item is changed
+
+Methods vs Computed vs Watch
+  Methods : 
+    1. Use with event binding OR data binding
+    2. Data binding : Method is executed for every "re-render" cycle of the component
+    3. Use for events or data that really needs to be re-evaluated all the time
+  Computed :
+    1. User with data binding
+    2. Computed properties are only re-evaluated if one of their "used values" changed
+    3. Use for data that depends on other data
+  Watch : 
+    1. Not used directly in template
+    2. Allows you to run any code in reaction to some changed data ( e.g., sending http request etc.)
+    3. Use for any non-data update you want to make
+
+short hand for v-on is @, e.g., v-on:click="methodName()" can be written as @click="methodName()"
+short hand for v-bind is :, e.g., v-bind:value="dataElementName" can be written as :value="dataElementName"
+there is no short hand for v-model
+
+we can set the inline style of an html element by using v-bind, pass the style components inside curly braces
+  e.g., <p :style="{color: pColor}">Style me inline!</p>
+  you can replace '-' of the style attribute with uppercase letter of the following word, like background-color as backgroundColor
+  e.g., <p :style="{backgroundColor: pColor}">Style me inline!</p>
+
+we can set the class of an html element dynamicall by using v-bind, and setting the class to true using an object structure by bassing them in curly braces,
+  e.g., <div v-bind:class="{active: booleanDataElement}"></>
+also you can pass the dynamic and static classes as array,
+  e.g., <div v-bind:class="[{active: booleanDataElement}, 'demo']"></>
+
+by using v-if on a html element, that element will be shown only if the condition is met
+  e.g.,
+  <p v-if="1===2">para content</p> - here para won't be shown
+  <p v-if="1===1">para content</p> - here para will be shown
+  here in the v-if condition you can pass data elements, methods as far as they return boolean values, condition operators like || &&
+you can also use v-else on the immediate neighbour element that comes after v-if,  you can't have any other elements in between the elements that uses v-if and v-else
+here these v-if and v-else elements are not about showing and not showing, they are actually attaching and detaching from the DOM
+if you just want show/hide the content instead of attach/detach, use v-show, but this does not work with v-else or v-else-if
+
+by using v-for you can iterate over an array element
+  e.g., <p v-for="arrayItem in arrayList">{{ arrayItem }}</p> - here you cannot use "arrayItem" out side of this html element
+you can pull more than just items from array,
+  e.g., <p v-for="(arrayItem, index) in arrayList">{{ arrayItem }} -  {{ index }}</p> - here are pulling two things, arrayItem itself and its index also
+not only array lists, you can loop through object properties
+  e.g., <p v-for="(key, value, index) in {name:'grandpa', age:99}">{{ key }}:{{ value }} -  {{ index }}</p>
+you can also loop through range of numbers
+  e.g., <p v-for="num in 10">{{ num }}</p>
+try using key attribute when you use v-for to make sure each dom element rendered can be uniquely identify by the vue
+  e.g., <p v-for="num in 10" :key="num">{{ num }}</p>
+
+under the hood, vue uses Javascript proxies for reactivity
+you can use create multiple Vue apps, and access multiple html components
+each Vue app works standalone, there is no connection between them, so you cannot access the data properties or any other properties related to other Apps
+
+you should not control same html part with different apps
+you should not use one app to control multiple html parts
+its always one app per one html part
+
+official term to use the vue app controlled html part is called "template"
+you can define the html content of the template inside the app by assigning it to the template variable
+  e.g.,
+    template:`
+      <p>{{ dataElement }}</p>    
+    `
+
+To access the DOM element from the Vue app you can create ref
+  e.g., <input type="text" ref="userInput" />
+  here ref is a special keyword understood by Vue and will keep track of the input element, to access the above html element from vue app, you need to access ref variable,
+  e.g., this.$ref.userInput
+  this will give you the access to the DOM element of userInput text field
+
+
+Vue Instance Lifecyle
+  createApp({...}) then
+  beforeCreate() then
+  created() (here it compiles template and replaces all the place holders with the dynamic content) then
+  beforeMount() then
+  mounted() then
+  mounted Vue Instance
+
+  if data changed
+    beforeUpdate() then 
+    updated() then
+  
+  if Instance Unmounted
+    beforeUnmount() then
+    unmounted() then
+
+we add extra functionality to these Lifecyle phases by calling these functionas in the App
+  e.g., beforeCreate(){ console.log('before create method')}, created(){ console.log('created method')}, updated(){ console.log('updated method')} and so on
+
+Components:
+  You should always name your components with two words with a dash eg., friend-contact, this is to avoid any clash with actual html tags
+  components are like mini apps which are connected to main apps, therefore they can have their own data elements, methods, etc
+
+
+You need a Vue cli for a better development setup & workflow
+as a prerequesite, we need node.js to be installed
+as part of node.js you need npm (node package manager)
+
+once you have vue cli installed,
+command to create a vue app = vue create vue-cli-first-app
+command to download all dependencies of a vue app = npm install
+command to spin up dev server = npm run serve
+
+props:
+  used for parent to child communication
+  must not be mutated, i.e., must not change the values with out permissions from parent app
+  declaration can be 
+    either array of fields e.g., props: ['name','phoneNumber','emailAddress']
+    or as an object e.g.,
+      props: {
+        name: {
+          type: String,
+          required: true
+        },
+        phoneNumber: String,
+        emailAddress: String,
+        isFavourite: {
+          type: String,
+          required: false,
+          default : '0', // default values can also be functions
+          validator: function(value){
+            return value === '1' || value === '0';
+          }
+        }
+      }
+  the following value types (type property) are supported:
+    String
+    Number
+    Boolean
+    Array
+    Object
+    Date
+    Function
+    Symbol
+    But type can also be any constructor function (built-in ones like Date or custom ones)
+  if you want to pass any values to props other than String you can use v-bind
+
+custom events can be triggered from the child to parent component using this.$emit('event-name', data...) or $emit('event-name', data...)
+custom events can be handled like any other events e.g., @event-name="function()"
+
+emits: 
+  this is opposite of props, since this declares all the custom events that will be emitted from the component
+  declaration can be either array of custom events or objects that provides more information
+
+provide + inject:
+  instead of passing the props to the child element, you can declare the same props under provide, and inject them into the child elements
+    syntax for prop: prop:{obects...} or prop(){return {objects...};}
+    syntax for inject: inject:[]
+  you can only inject the provide that are declared in the parent components
+  you can declare the provide as a method and access the data elements
+  you can provide and inject both data and methods
+  you must only use provide+inject to avoid pass through components, else you must be using props and custom events
+
+when a component is imported and declared in main.js, it becomes global component
+However, if it is imported in a specific Vue file, it becomes local component
+  syntax for local component:
+    <script>
+    import componentName from 'path of the comonent';
+
+    components:{
+      'component-tag': componentName
+    }
+
+    or
+
+    components:{
+      componentName: componentName
+    }
+
+    or
+
+    components:{
+      componentName 
+      //this gets evaluated to componentName: componentName, you can use html tags as <componentName /> or <component-name></component-name>
+      // Note: <<component-name /> is not allowed, only <componentName /> is allowed
+    }
+
+    
+    </script>
+
+
+Style declared in one component is applied accross entire app i.e., all the templates of different components, since they are global
+when add "scoped" attribute to the style tag in any file, 
+  then that style will be applied only to the template that is in the same file
+  and is not applicable to any other sibling or child components
+
+slot
+  it helps receive the html code from the outside the component and renders in the current template
+  this is just like props, however instead of data, it gets code from the other components from where it is being called
+  if you are having multiple slots in a template, they you must name them
+  you can only have only one unnamed slot, and that will be default slot
+  while passing html code to the slot, you can use "v-slot" attribute in a <template> tag to mention which v-slot it needs to goto
+    syntax to pass to named slot:
+      <template v-slot:header>
+        <h3>{{ dataElement }}</h3>
+      </template>
+    syntax to pass to default slot: 
+      <template v-slot:default>
+        <h3>{{ dataElement }}</h3>
+      </template>
+  you can set default content between the slot tags
+
+short had for v-slot is # i.e., v-slot:slotname can be used as #slotname
+
+scoped slots:
+  you use this if you want have control over the data inside the slot
+  https://vuejs.org/v2/guide/components-slots.html#Scoped-Slots
+
+dynamic components
+  components that set at run time
+  vue has a special tag called "component" to do this
+  you just have to use component tag, and pass the name of the component to the is attribute
+  e.g., <component is="componentName"></component> or you can bind is attribute to a data element, <component :is="dataElementThatHasComponentName"></component>
+
+keep alive
+  keep-alive component works with dynamic components
+  it makes sure that the state of the dynamic components are not removed even if the dynamic components are destroyed
+
+teleport
+  this is a built in component vue provides
+  it wants only "to" prop, in which you provide css selector to move this element in the html markup
+
+fragments
+  from vue3 you can have multiple top elements in the template section
+  until vue2 you need a top level element to wrap every thing
+
+vue style guide
+  recommendations on how a vue project should be organized
+  these are non technical rules
+  you dont have to follow, but must be followed if you want to share your project with others
+
+Attribute Fallthrough
+  when you pass an event or attribute or props to a custom component, it is applied to the root element of the custom component
+
+
+v-model makes sure the type of the field is preserved and data element is also stored in the same type
+  e.g., if you v-model the value of input element of type number, it stores as a number
+v-model has certain properties like
+  v-model.number - makes sure data element is stored as number
+  v-model.trime - makes sure data element is stored without any white spaces
+  v-model.lazy - makes sure data element is not stored for every key stroke
+v-model can be used on select option or dropdowns also, but make sure you set the data element to a valid option of the dropdown or select option
+v-model can be used on check boxes, make sure data element is of empty array for a multiple check box group, then make sure all check boxes are v-model to same data element
+v-model can be used on radio buttons, make sure all radio buttons are v-model to same data element
+v-model on custom elements
+  yes, it can be used on custom elements, since v-model is nothing but v-on and v-bind
+  v-model on a custom element is v-bind to a prop:'modelValue'
+  v-model on a custom element is v-on to a emit:'update:modelValue'
+  so in the custom component we must declare these prop and emit events
+
+http requests
+  you can use built in methods like fetch or a custom package like axios to back end APIs
+
+Routing
+  when ever you share a vue page, it always takes to the home page, you cant share different tabs that are shown with the help of js
+  with routing you can share a specific page in the vue app
+
+to add routing functionality - npm install --save vue-router@next
+
+then in the main.js, you import router package, add routes to it, then use it in the app, as shown in the below sample code,
+  -------------------------start main js----------------------------
+  import { createApp } from 'vue';
+  import App from './App.vue';
+  import router from './router.js';
+  const app = createApp(App)
+  app.use(router);
+  app.mount('#app');
+  -------------------------end main js----------------------------
+  -------------------------start router js----------------------------
+  import { createRouter, createWebHistory } from 'vue-router';
+  import Component1 from './components/Component1.vue';
+  import Component2 from './components/Component2.vue';
+  import Component3 from './components/Component3.vue';
+  import Component4 from './components/Component4.vue';
+  import FooterComponent from './components/FooterComponent.vue';
+  const router = createRouter({
+      history: createWebHistory(),
+      routes: [
+          {path: '/', redirect: '/component1' },
+          {
+            name: 'component1,
+            path: '/component1', 
+            meta: { varname: value}, // you can access this using this.$route.meta in script block of a component, or in route guards as to.meta, from.meta 
+            components:{default:Component1, footer: FooterComponent}, 
+            children: [
+                { name:'component4', path: 'Component4', component: Component4 }]
+          },
+          {
+            path: '/component2', 
+            component:Component2, 
+            alias: '/comp2',
+            beforeEnter(to, from, next){ // this function gets executed before entering this route, you can also enter this in the vue app script as beforeRounteEnter(){}
+              next(true); // allows navigation
+              next(); // allows navigation
+              next(false); // blocks navigation
+              next({ name: 'component1', params:{param1:'value1'}}) // this navigates to a specific page, make sure you do some conditional check else you might endup in infinite loop
+            }
+          },
+          {path: '/component2/:componentName', component:Component3, props: true }, // Component2 must have a props declared with name:componentName
+          {path: '/:notFound(.*)',redirect: '/component1' } // this must be at last or it might override other paths
+      ],
+      linkActiveClass: 'active',
+      scrollBehavior(to,from,savedPosition){ // this function helps handle the scroll position when you navigate between routes
+        console.log(to,from,savedPosition)
+        if(savedPosition){
+          return savedPosition;
+        }
+        return { left: 0, top: 0};
+      }
+
+  });
+  router.beforeEach( function(to, from, next){ // this function gets executed before each navigation between routes,
+    next(true); // allows navigation
+    next(); // allows navigation
+    next(false); // blocks navigation
+    next({ name: 'component1', params:{param1:'value1'}}) // this navigates to a specific page, make sure you do some conditional check else you might endup in infinite loop
+  });
+  router.afterEach( function(to, from){ // this function gets executed after each navigation gets route confirmed,
+    // e.g., good to use for analytics
+  });
+  export default router;
+  -------------------------end router js----------------------------
+
+  then you add <router-view></router-view> tags to get the above components rendered
+  you need to add 'router-view' in the parent component, e.g., for a nester router component, it needs to be declared in the parent component
+  if you have got mulitple router-view at same level then you need to use names, and you can have one unnamed router view, which will be treated as default
+
+router-link
+  using 'router-link' tag is just using anchor tag under the hood
+  but unlike anchor tag, browser does not gets re-loaded for navigation
+  it loads new page with out losing app state
+  you have apply css on a.router-link-active to see active router-link
+  router-link-active class applied to any path contains the router path, router-link-exact-active class applied to only the path exactly matching the path
+  also you can change the class names while creating the router, e.g., linkActiveClass: active
+
+
+$router
+  after you import router package, you will have $router available under 'this' keyword
+  to navigate - this.$router.push('/component1')
+  to go back - this.$router.back()
+  to go forward - this.$router.forward()
+
+while creating the routes, in the path, if you prefix it with ':' it becomes a dynamic value called param, e.g., path: '/component1/:var1
+for a path with param, if you set 'props: true', then the param value will be passed as props
+
+$route
+  you can access the path param using this.$route.params e.g., this.$route.params.var1
+  you can access the query param using this.$route.query e.g., this.$route.query.var1
+  you can access the details of the page you are coming from using this.$route.from
+  you can access the details of the page you are going to using this.$route.to
+  you can access the meta data using this.$route.meta e.g., this.$route.meta.variable1
+
+
+navigation guards:
+  these takes to, from, next parameters,
+    to - which component it is going to
+    from - which component it is coming from
+    next - should go or not, or should go to a new component as passed to this
+  can be used in the component app:
+    beforeRouteEnter - gets called before route enters the component
+    beforeRouteUpdate - gets called before route update the component
+    beforeRouteLeave - gets called before route leave the component
+  can be used in the main js:
+    router.beforeEach - gets called before every route is confirmed
+    router.afterEach - gets called after every route is confirmed
+
+It is a good practice to separate all the components that are loaded using routes from the actual components
+also write all the router logic in a different js file e.g., router.js and then at the end of the file just export it, like export default router
+
+transition
+  using 'transition' tag you can add animation to the child element
+  there must be only one child element

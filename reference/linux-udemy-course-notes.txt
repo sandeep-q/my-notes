@@ -1,0 +1,478 @@
+Hierarchy of command flow in a computer system:
+  User
+        -> Application(Browser, Email, software, etc)
+                                                      -> Shell(GUI, bash, csh etc)
+                                                                                    -> kernel(program)]
+                                                                                                        -> hardware
+
+  application + shell is called software
+  shell + kernel is called OS
+
+Find your SHELL
+  echo $0 - prints current active shell
+  cat /etc/shells - shows all available shells in the OS
+  cat /etc/passwd - lists all users, and last column shows the shell configured to that user
+
+
+linux directory structure - https://www.howtogeek.com/117435/htg-explains-the-linux-directory-structure-explained/
+
+linux file types
+  - : regular file
+  d : directory
+  c : character device file
+  b : block device file
+  s : local socket file
+  p : named pipe
+  l : symbolic link
+
+
+find files and directories
+  find - search the file system
+    find <dirToSearch> -name <fileNameTofind>
+  locate - has its own data base, and searches only in its DB, so you need to run 'updatedb' command, to get the data base updated before searching
+
+change user password
+  passwd - it changes the currently logged in user's password
+  passwd <user id> - only as a root user, you can provide <user id>
+
+touch abc{a..c}{1..9}xyz - creates 3*9 files from abca1xyz to abcc9xyz
+
+wild cards - https://tldp.org/LDP/GNU-Linux-Tools-Summary/html/x11655.htm
+
+soft and hard link
+  inode - pointer or a number of a file on the hard disk
+  soft link - link will be removed if file is removed
+  hard link - deleting, renaming, moving of original file does not effect the hard link
+
+  ln <path of the file> - creates hard link and file type will be -
+  ln -s <path of the file> - creates soft link and file type will be l
+  Note: hard links only work with in the same partition, else you will get an error saying, "Invalid cross link"
+
+ls
+  -i gives inode information
+  -a shows hidden files
+  -t prints list based on timestamp (latest on top)
+  -tr prints lists based on timestamp (latest on bottom)
+
+chmod
+  chmod u-w jerry - removes write permission for user on file jerry
+  chmod g-w jerry - removes write permission for group on file jerry
+  chmod o-w jerry - removes write permission for others on file jerry
+  chmod a-w jerry - removes write permission for all(user, group and others) on file jerry
+  chmod u+rw jerry - gives read and write permission for user on file jerry
+  chmod ug+r jerry - gives read permission for user, group and others on file jerry
+
+  numeric permissions
+    0 - no permissions
+    1 - execute
+    2 - write
+    4 - read
+
+  chmod 345 jerry - gives user (execute, write) group (read) others (execute, read) on file jerry
+
+  Note: if a directory does not have x permission, it means they cannot cd into it
+
+chown and chgrp
+  chown <user name> <file name> - changes user ownership of the file
+  chgrp <group name> <file name> - changes group ownership of the dir, but not sub dir
+  chgrp -R <group name> <file name> - changes group ownership of the dir, also cascades the changes to sub dir
+
+  Note:
+    1. You can only change ownership of the file user, as a root user
+    2. You can only change the ownership of the file group, iff you are member of both groups, or as a root user
+
+Access Control List
+  provides more granular control over file permissions, you can give access to only a specific user or group
+
+  getfacl - gets the acl
+  setfacl - sets the acl
+
+  setfacl -m u:user:rwx /path/to/file - add permission (read, write, execute) for user
+  setfacl -m g:group:rw /path/to/file - add permission (read, write) for user
+  setfacl -Rm "entry" /path/to/file - to allow all files or directories to inherit ACL entries from the directory is within
+  setfacl -x u:user /path/to/file - remove user from acl
+  setfacl -b /path/to/file - remove all entries from acl
+
+  Note:
+    As you assign the ACL permission to a file/directory it adds + sign at the end of the permission
+    setting w permission with ACL does not allow to remove the file
+
+HELP commands
+  whatis <command>
+  <command> --help
+  man <command>
+
+> write to file
+>> append to file
+  eg.: echo "hi there, this is from echo" >> filename
+
+tee command
+  e.g.:
+  echo "hi there, this is from tee" | tee filename
+    (write or overwrite)
+  echo "hi there, this is from tee" | tee -a filename
+    (append)
+  ls -l | tee file1 file2 file2
+    (write to multiple files)
+
+| pipe is used by the shell to connect the output of one command to the input of another command
+
+
+File Maintenance Commands
+  cp - copy file or directory
+  rm - remove file
+  mv - move file
+  mkdir - create dir
+  rmdir or rm -r - remove dir
+    rm -Rf - will forcefully removes the sub directories and its contents as well
+
+File Display Commands
+  cat <file name>- views entire content
+  more <file name> - command gives the output, one page at a time from top of the file
+  less <file name> - command gives the output, one page at a time from bottom of the file, but you can scroll up/down one line at a time using up or down arrow key
+  head -#noOfLines <file name> - command gives requested number of lines from the top of the file, default is 10 lines
+  tail -#noOfLines <file name> - command gives requested number of lines from the bottom of the file, default is 10 lines
+
+Filter/Text processing Commands
+  cut
+    cut -c2 filename - lists the 2nd character from each line
+    cut -c2,4,6 filename - lists the 2nd,4th,a6th characters from each line
+    cut -c2-5 filename - lists the 2nd to 5th character from each line
+    cut -c2-4,7-9 filename - lists the 2nd to 4th and 7th to 9th characters from each line
+    cut -b1-3 filename - lists the 1st to 3rd byte from each line
+    cut -d: -f 6 filename - lists the 6th column separated by : from each line
+    cut -d, -f 6-8 filename - lists the 6th to 8th columns separated by , from each line
+    ls -l | cut -c2-4 - lists the user permissions of files in current dir
+
+  awk
+    awk '{print $1}' file - list 1st field of each line from a file
+    ls -l | awk '{print $1,$3}' - list 1st, 3rd field of each line from the command output
+    ls -l | awk '{print $NF}' - list last field of each line from the command output
+    ls -l | awk '{print NF}' - list number of field of each line from the command output
+    awk '/searchtext/ {print}' file - list matching lines from a file
+    awk -F: '{print $6}' file - lists the 6th column separated by : of each line from a file
+    cat file | awk '{$2="replace text"; print $0}' file - replaces 2nd field from the command output with provided 'replace text'
+    awk 'length($0) > 15' file - list lines with lenght > 15 of each line from a file
+    ls -l | awk '{if($9 == 'matching text') print $0}' - list lines with 9th field having matching text from the command output
+
+  grep - global regular expression print
+    grep keyword file - lists lines from file that has matching keyword
+    grep -c keyword file - lists number of lines from file that has matching keyword, output will be a number
+    grep -i keyword file - lists lines from file that has matching keyword ignores case-sensitive
+    grep -n keyword file - lists lines prefixed with line numbers from file that has matching keyword
+    grep -v keyword file - lists lines from file that has no matching keyword
+    ls -l | grep keyword - lists line from the command output that has matching keyword
+    egrep -i "keyword1|keyword2" file - lists lines from file that has matching keyword1 or keyword2
+      The egrep command is shortcut for grep binary, but with one exception, when grep is invoked as egrep the grep binary activates its internal logic as it would be called as grep -E .
+      The difference is that -E option enables usage of extended regexp patterns. It will allow you using of such meta-symbols as + , ? or |
+
+  sort
+    sort file - sorts file in alphabetical order
+    sort -r file - sorts file in reverse alphabetical order
+    sort -k2 file - sorts file in alphabetical order of field 2, here fields are seperated by space
+
+  uniq
+    sort file | uniq - removes duplicates and lists lines, make sure to sort first before using unique
+    sort file | uniq -c - removes duplicates and lists lines, prefixed with repeat count
+    sort file | uniq -d - removes duplicates and lists lines, only shows repeated lines
+
+  wc
+    wc file - gives line count, word count and byte count in a file
+    wc -l file - gives line count in a file
+    wc -w file - gives word count in a file
+    wc -c file - gives byte count in a file
+    wc DIR - NOT ALLOWED
+    grep keyword file | wc -l - gives line count in the command output
+
+compare files
+  diff file1 file2 - line by line
+  cmp file1 file2 - byte by byte
+
+compress and uncompress files
+  tar cvf filename.tar dirPathToTar - compress the folder and creates filename.tar
+  tar xvf filename.tar - uncompress the folder
+  gzip filename.tar - compresses a single file into a single file, adds .gz at end of file name
+  gzip -d filename.tar.gz OR gunzip filename.tar.gz - uncompresses a single file into a single file
+
+truncate -s 40 filename - truncates filename size to 40, data will be lost when you truncate the file
+cat file1 file2 file3 > file4 - combines all the content of file1 to 3 into file4
+split -l 2 filename1 filename2 - splits the content of the filename1 with 2 lines in each file, new files will be automatically named with prefix filename2, 
+  e.g.: filename2aa, filename2ab, filename2ac etc
+
+vi editor
+  i - insert
+  esc - escape any mode
+  r - replace
+  d- delete character
+  dd - delete line
+  u - undo
+  :q! - quit with out save
+  :w - save
+  :wq! - save and quit
+  :%s/search/replace/ - replace all matching strings
+
+vim editor - https://www.openvim.com
+
+sed - stream editor
+  sed 's/search/replace/g' filepath - search for all matching strings in file and replace it and prints on screen, won't save
+  sed 'n!s/search/replace/g' filepath - search for all matching strings in file and replace it except line number n and prints on screen, won't save
+  sed -i 's/search/replace/g' filepath - search for all matching strings in file and replace it and saves the file, wont print on screen
+  sed '/search/d' filepath - search for all lines with matching string then delete the line, and prints on screen, won't save
+  sed -i '/^$/d' filepath - search for all empty lines delete the line, and saves the file, wont print on screen
+  sed -i '1d' filepath - deletes the first line, and saves the file, wont print on screen
+  sed -i '1,5d' filepath - deletes the first to fifth line, and saves the file, wont print on screen
+  sed -n 12,18p filepath - prints only file from line 12 to 18
+  sed -i 's/\t/ /g' filepath - replace all tabs in a file with single space and saves the file, wont print on screen
+  sed G filepath - puts an empty line between each line and prints, wont save
+
+User Account Management
+  useradd uname1 - creates user with name:uname1 with group name as uname1
+  groupadd gname1 - creates group with name:gname1
+  userdel uname1 - deletes user with name:uname1
+  groupdel gname1 - deletes group with name:gname1
+  usermod -G groupname username- changes the group of user:username to group:groupname
+  useradd -g gname1 -s /bin/bash -c "Description of user" -m -d /home/uname1 uname1 - creates user with name:name1, home dir:/home/uname1, group:gname1, with shell:/bin/bash
+
+  user management happens in 3 files:
+    /etc/passwd/ - user info
+    /etc/group - group info
+    /etc/shadow - actual password in encrypted format
+
+switch user and sudo Access
+  su - username - switches user, asks password
+  sudo command - runs the command with root privileges
+  visudo - edits the sudoers file, which is used by the sudo command. To change what users and groups are allowed to run sudo, run visudo
+
+monitor users
+  who - The basic who command with no command-line arguments shows the names of users that are currently logged in, and depending on which Unix/Linux system you are using, may also show the terminal they're logged in on, and the time they logged in.
+  last - display the list of all the users logged in and out since the file /var/log/wtmp was created. One or more usernames can be given as an argument to display their login in (and out) time and their host-name.
+  w - provides a quick summary of every user logged into a computer, what each user is currently doing, and what load all the activity is imposing on the computer itself. The command is a one-command combination of several other Unix programs: who, uptime, and ps -a.
+  finger - Finger command is a user information lookup command which gives details of all the users logged in. This tool is generally used by system administrators. It provides details like login name, user name, idle time, login time, and in some cases their email address even.
+  id - id command in Linux is used to find out user and group names and numeric ID's (UID or group ID) of the current user or any other user in the server.
+
+talking to users
+  users - users command in Linux system is used to show the user names of users currently logged in to the current host. It will display who is currently logged in according to FILE
+  wall - wall command in Linux system is used to write a message to all users. This command displays a message, or the contents of a file, or otherwise its standard input, on the terminals of all currently logged in users. The lines which will be longer than 79 characters, wrapped by this command.
+  write - write command in Linux is used to send a message to another user. The write utility allows a user to communicate with other users, by copying lines from one user's terminal to others.
+
+Directory service - Account Authentication
+    Active Directory = Microsoft
+    IDM = Identity Manager from Redhat
+    WinBIND = Used in LINUX to communicate with Windows from Samba
+    OpenLDAP = open source
+    IBM Directory Server = IBM
+    JumpCloud
+
+    Note: LDAP is not a directory service, its just a protocal to talk to a directory service, it stands for Lightweight Directory Access Protocol
+
+System Utility Commands
+  date - display the system date and time. date command is also used to set date and time of the system. By default the date command displays the date in the time zone on which unix/linux operating system is configured. You must be the super-user (root) to change the date and time.
+  date -s "23 JUN 2019 13:02:00 "- to set the date
+  uptime - returns set of values that involve, the current time, and the amount of time system is in running state, number of users currently logged into, and the load time for the past 1, 5 and 15 minutes respectively.
+  hostname - obtain the DNS(Domain Name System) name and set the system's hostname or NIS(Network Information System) domain name.
+  uname - reports basic information about a computer's software and hardware. When used without any options, uname reports the name, but not the version number, of the kernel (i.e., the core of the operating system).
+  which - locate executables in the system. It allows user to pass several command names as arguments to get their paths in the system
+  cal - a standard program on Unix and Unix-like operating systems that prints an ASCII calendar of the given month or year. If the user does not specify any command-line options, cal will print a calendar of the current month.
+  bc - basic calculator (often referred to as bench calculator), is "an arbitrary-precision calculator language" with syntax similar to the C programming language. bc is typically used as either a mathematical scripting language or as an interactive mathematical shell
+
+Processes and Jobs
+  Application = service
+  script
+  Process
+  Daemon
+  Threads
+  Job
+
+Process/Service Commands - work on these more
+  systemctl or service
+  ps
+  top
+  kill
+  crontab -e - schedule a job
+  at - schedule to execute only once
+
+Additional Cron Jobs, just add your script in the respective folder, and it will run automatically
+  hourly - /etc/cron.hourly
+  daily - /etc/cron.daily
+  weekly - /etc/cron.weekly
+  monthly - /etc/cron.monthly
+
+  timings for each are set in /etc/anacrontab -- except hourly
+  for hourly /etc/cron.d/0hourly
+
+Process Management
+  ctrl-c - stops the processing
+  jobs - lists all the jobs in the background
+  bg command - executes command in the background
+  fg - brings the running job to foreground
+  nohup process & - run process even after exiting terminal
+  pkill - kill a process by name
+  nice -n 5 command - sets process priority, range is from -20 to 19, -20 being top priority
+  top - process monitoring
+  ps - list process
+
+System Monitoring - work on these more
+  top - process info
+  df -h - disk info in human readable format
+  dmesg -
+  iostat l - to view
+  netstat -
+  free -
+  cat /proc/cpuinfo -
+  cat /proc/meminfo -
+
+log monitoring
+  log directory = /var/log
+  boot
+  chronyd = NTP
+  cron
+  maillog
+  secure
+  messages
+  httpd
+
+system maintenance commands
+  shutdown
+  init 0-6 - each number has a set of action
+  reboot
+  halt - hard shut down, as if like you are switching off the power button
+
+changing hostname
+  hostnamectl set-hostname <newhostname>
+  or edit below files
+    ver 7 - /etc/hostname
+    ver 6 - /etc/sysconfig/network
+  Note: reboot to apply new hostname
+
+Finding System information
+  cat /etc/redhat-release
+  uname -a
+  dmidecode
+
+Finding system architecture
+  arch - tells if its a 32 bit or 64 bit system
+
+Terminal control keys
+  ctrl u - erase every thing you typed on command line
+  ctrl c - stop/kill a command
+  ctrl z - suspends a command
+  ctrl d - exit from an interactive program (signals end of data)
+
+Terminal commands
+  clear - to clear your screen
+  exit - exit out of shell, terminal or a user session, script
+  script - starts recording user activity, like what commands are typed and output of command, to stop recording type exit command
+
+recover root password
+  restart
+  edit grub
+  change password
+  reboot
+
+SOS report
+  sosreport - will generate a report in /var/tmp/sos.<randometext>.tar.gz file
+
+environment variables
+  printenv or env - to view all env variables
+  echo $VAR - to print one env variable
+  export TEST=1 - to set env variable
+  to set env variable permanently
+    vi .bashrc
+    TEST='123'
+    export TEST
+  to set global env variable permanently
+    vi /etc/profile or /etc/bashrc
+    TEST='123'
+    export TEST
+
+aliases - giving a short name for long command
+
+  user alias = applies only to specific user profile
+    you can add it in /home/user/.bashrc
+  global alias = applies to every one who has account on the system
+    you can add it in /etc/bashrc
+
+  alias - prints all the alias
+  unalias name - deletes the alias has that name
+  alias listall="ls -al"
+  alias pwdls="pwd; ls;"
+  alias dir="ls -l | grep ^d"
+  alias wpa="chmod a+w"
+
+shell history
+  history - prints all the commands ran by the user
+  !<number> - runs the command from the history that has this number
+
+  Note:
+    the file where history of your shell commands saved = /home/yourname/.bash_history
+    root user can view other users history by - cat /home/userhomedir/.bash_history
+
+--------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------SHELL SCRIPTING----------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------
+
+A shell script contains:
+  1st line must always tell which shell to use
+    #!/bin/bash
+  comments - #
+  commands - echo, cp, grep etc
+  statements - if, while, for etc
+
+make sure shell script file has executable permission (-rwxr-xr-x)
+always run using absolute path (/home/user/script.bash) or relative path (./script.bash)
+
+defining a variable
+  variablename=value - e.g., name=sandeep, fullName='Sandeep Kurella' (remember to put quotes when there are spaces in value)
+  variable=`command` - assigns the output of the command to variable, make sure the command is enclosed in ticks(e.g., `hostname`), e.g., a=`hostname` (assigns hostname of the machine to the variable a)
+  echo $variablename - prints variable's content, echo $name prints sandeep
+
+Input/Output
+  read variable - asks the input from user, once provided, will assign that value to variable
+  echo $variable - prints the content of the variable
+
+operators
+  https://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-11
+
+syntax - google more about syntax, because lot of options are there
+  if [ condition ]
+  then
+    echo
+  elif [ condition ]
+  then
+    echo
+  else
+    echo
+  fi
+
+  -----------
+
+  for i in 1 2 3 4 5
+  do
+    echo i
+  done
+
+  for (( c=1; c<=5; c++ ))
+  do
+     echo "Welcome $c times"
+  done
+
+  -----------
+
+  while [ condition ]
+  do
+    echo
+  done
+
+  -----------
+
+  var=a
+
+  case $var in
+    a) echo "your selection is a";;
+    b) echo "your selection is b";;
+    c) echo "your selection is c";;
+    d) echo "your selection is d";;
+    *) echo "your selection is invalid";;
+  esac

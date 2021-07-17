@@ -1,0 +1,43 @@
+start elasticsearch instance:
+docker run -p 9200:9200 -p 9300:9300 -p 22:22 -p 5601:5601 --name es -e "discovery.type=single-node" elasticsearch:7.10.1
+
+to check status:
+    curl --location --request GET 'http://127.0.0.1:9200'
+
+to add schema:
+    curl --location --request PUT '127.0.0.1:9200/shakespeare' \
+    --header 'Content-Type: application/json' \
+    --data-raw 'http://media.sundog-soft.com/es7/shakes-mapping.json'
+
+to add data into schema:
+    curl --location --request POST '127.0.0.1:9200/shakespeare/_bulk' \
+    --header 'Content-Type: application/json' \
+    --data-raw 'data from http://media.sundog-soft.com/es7/shakespeare_7.0.json'
+
+do search from added data:
+    curl --location --request GET 'http://127.0.0.1:9200/shakespeare/_search?pretty' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+      "query": {
+          "match_phrase": {
+              "text_entry": "to be or not to be"
+          }
+      }
+    }'
+
+logstash plugins:
+https://www.elastic.co/guide/en/logstash/current/filter-plugins.html
+
+cmd to run logstash:
+sudo /usr/share/logstash/bin/logstash -f <path to configuration file>
+
+sample configuration file for logstash:
+https://www.elastic.co/guide/en/logstash/current/config-examples.html
+
+Grok is a great way to parse unstructured log data into something structured and queryable.
+grok patterns,
+https://www.elastic.co/guide/en/logstash/current/plugins-filters-grok.html
+grok debug tool,
+https://grokdebug.herokuapp.com/
+
+https://coralogix.com/log-analytics-blog/advanced-guide-to-kibana-timelion-functions/

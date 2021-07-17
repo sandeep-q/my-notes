@@ -1,0 +1,171 @@
+--------------------docker-------------------------
+
+## List Docker CLI commands
+docker
+docker container --help
+
+
+## Display Docker version and info
+docker --version
+docker version
+docker info
+
+## Execute Docker image
+docker run hello-world
+
+
+## List Docker images
+docker image ls
+
+## remove docker image
+docker rmi imageId
+
+## remove docker image forcefully
+docker rmi -f imageId
+
+## List Docker containers (running, all, all in quiet mode)
+docker container ls
+docker container ls --all
+docker container ls -aq
+
+#gives complete info of the container
+docker containter inspect <container name>
+
+
+remove docker
+sudo apt-get purge docker-ce
+
+sudo rm -rf /var/lib/docker
+
+build image
+docker build -f Dockerfile -t qantasloyalty/testenv:1 .
+
+For windows:
+docker run -it --rm -v %cd%:/working-dir -w /working-dir qantasloyalty/testenv:2 ant -buildfile ./Reporting/ReportGenerator/build.xml -Denv=sit -Daccounts=1
+docker run -it --rm -v %cd%:/working-dir -w /working-dir qantasloyalty/testenv:2 mvn verify -Dcucumber.options="--tags @rest"
+
+For Mac/Linux:
+docker run -it --rm -v $(pwd):/working-dir -w /working-dir qantasloyalty/testenv:2 ant -buildfile ./Reporting/ReportGenerator/build.xml -Denv=sit -Daccounts=1
+docker run -it --rm -v $(pwd):/working-dir -w /working-dir qantasloyalty/testenv:2 mvn verify -Dcucumber.options="--tags @rest"
+
+
+docker save -o qantastestenv.tar qantasloyalty/testenv:2 java:8-jdk
+docker load -i qantastestenv.tar
+
+export DOCKER_HOST=localhost:2375
+
+Access docker container using CLI, by mounting current working directory,
+docker run -it -v %CD%:/WORKDIR -w /WORKDIR qantasloyalty/techops/test-env:3 /bin/bash
+
+aws credentials
+docker run -it -v ~/.aws:/root/.aws cevoaustralia/aws-google-auth -u sandeep.kurella@qantasloyalty.com -I C01g1l5do -S 199578307350 -p 113053657575 -R ap-southeast-2 -d 3600 --print-creds -p sts
+
+113053657575.dkr.ecr.ap-southeast-2.amazonaws.com/qantasloyalty/lto-jenkins-build-images:taf-misc-latest
+--------------------maven-------------------------
+mvn verify -Dcucumber.options="--tags @web" -Dwebdriver.driver=firefox
+
+mvn verify -Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=chrome -Dwebdriver.remote.os=WINDOWS
+
+mvn clean compile exec:java -Dexec.mainClass="au.com.qantas.loyalty.lto.jira.PullFeaturesFromJIRA" -Dexec.args="TECHOPS-1587"
+mvn clean compile exec:java -Dexec.mainClass="au.com.qantas.loyalty.lto.jira.MapFeaturesToJIRA" -Dexec.args="TECHOPS-1587"
+mvn clean verify -Dcucumber.options="--tags @poc" -Dwebdriver.driver=firefox
+-Dwebdriver.driver=edge -Dwebdriver.edge.driver="C:\Program Files\edgedriver\17134\MicrosoftWebDriver.exe"
+-Dwebdriver.driver=firefox -Dwebdriver.gecko.driver="C:\software\geckodriver.exe"
+-Dwebdriver.driver=chrome -Dwebdriver.chrome.driver="C:\Program Files (x86)\chromeWebDriver\2.35\chromedriver.exe"
+-Dwebdriver.driver=phantomjs -Dphantomjs.binary.path="C:\Program Files\phantomjs\2.1.1\bin\phantomjs.exe"
+-Dwebdriver.driver=appium -Dappium.platformName=android -Dappium.deviceName=AndroidEmulator -Dappium.browserName=chrome -Dappium.2.40=66.0.3359 -Dappium.chromedriverExecutableDir="C:\Program Files (x86)\chromeWebDriver\2.40"
+-Dwebdriver.driver=appium -DautomationName=XCUITest -Dappium.deviceName="iPhone 6" -Dappium.platformName=iOS -Dappium.platformVersion=11.0 -Dappium.browserName=safari
+-Dwebdriver.remote.url=http://10.0.75.1:4444/wd/hub -Dwebdriver.remote.driver=edge -Dwebdriver.remote.os=WINDOWS
+-Dwebdriver.remote.url=http://:4444/wd/hub -Dwebdriver.remote.driver=safari -Dwebdriver.remote.os=MAC
+-Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=chrome
+-Dwebdriver.remote.url=http://localhost:4444/wd/hub -Dwebdriver.remote.driver=edge
+-Dwebdriver.driver=appium -Dappium.hub=http://10.1.22.23:4723/wd/hub -Dappium.deviceName=emulator -Dappium.platformName=Android -Dappium.platformVersion=4.4.2 -Dappium.app=C:\workspace\code\java_workspace\lto-test-automation-rogue-one\AmazonShopping.apk -Dappium.appPackage=com.amazon.mShop.android.shopping -Dappium.appActivity=com.amazon.mShop.home.HomeActivity -Dcucumber.options="--tags @mobile"
+-Dos=Windows -Dos_version=10 -Dbrowser=edge -Dbrowser_version=18
+-Dos=Windows -Dos_version=10 -Dbrowser=Firefox -Dbrowser_version=65.0
+
+-Dwebdriver.remote.url=http://%s:%s@hub.crossbrowsertesting.com:80/wd/hub -Dwebdriver.remote.driver=chrome
+
+-Dwebdriver.remote.url=https://cloud.seetest.io/wd/hub -Dwebdriver.remote.driver=chrome
+
+-Dappium.hub=http://172.28.82.156:4723/wd/hub
+-DexecEnv=
+-Dserenity.jira.workflow.active=true
+-Dcucumber.options="--tags @only"
+-Dcucumber.options="--tags 'not @ignored'"
+-Dcucumber.options="--tags @tag1,@tag2"
+-Dcucumber.options="--tags '(@tag1 or @tag2) and not @tag3'"
+-Dcucumber.options=\"--tags @tag1\"
+-Ptaf-unit-tests
+-Dsoapui.properties=./src/test/resources/configurations/.properties
+
+
+-Dserenity.jira.workflow.active=true -DexecEnv=none -Dcucumber.options=\"--tags @sysprop-test\" -DmessageFromCmd=\"Hello from cmd line!\"
+
+mvn clean verify -Dcucumber.options="src/test/resources/features/sstring/Rogue.feature --tags @sstring" -DexecEnv=demo -DexecProject=rogue
+
+mvn clean verify -DexecEnv=sit -Dwebdriver.driver=edge -Dwebdriver.edge.driver="C:\Program Files\edgedriver\17134\MicrosoftWebDriver.exe" -Djira.username=610907 -Djira.password=deepu4WRK02 -Dcucumber.options="--tags @only" -DsoapVar="Hello Soap!" -Dsoapui.properties="./src/test/resources/configurations/test-account-generation/Properties/Properties_SIT.properties" -DTier=GOLD -DIteration=5 -DPointsAccrual=1000
+
+mvn clean verify -Dendtestio.platform=windows -Dendtestio.os=10 -Dendtestio.browser=chrome -Dendtestio.resolution=1280x1024 -Dendtestio.geolocation=sydney -Dendtestio.testsuite=25667
+
+docker run -it --rm -v %cd%:/working-dir -w /working-dir qantasloyalty/lto-taf/api
+mvn clean verify -Ptaf-unit-tests -DexecEnv=local
+
+#change project's version
+mvn versions:set -DnewVersion=0.0.2-SNAPSHOT
+
+#update dependency's version
+mvn versions:use-latest-versions -Dincludes=au.com.qantas.loyalty.lto:test-automation-framework-lib
+
+#download a jar to m2 repo
+mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get -DrepoUrl=https://mvnrepo.qantasloyalty.net/artifactory/libs-all/ -Dartifact=au.com.qantas.loyalty.lto:test-automation-framework-lib:18.0815.4
+
+#upload a local file to m2 repo
+mvn install:install-file -Dfile=C:\ATUTestRecorder_2.1.jar -DgroupId=com.CA.ATU21 -DartifactId=ATUTestRecorder -Dversion=2.1 -Dpackaging=jar
+
+
+@cucumber.deps.com.thoughtworks.xstream.annotations.XStreamConverter
+
+cmd to run selenium hub server
+java -jar selenium-server-standalone-3.141.59.jar -role hub
+
+cmd to run selenium node server
+java -jar -Dwebdriver.edge.driver="C:\TestOps\WebDriver\MicrosoftWebDriver.exe" selenium-server-standalone-3.14.0.jar -role node -hub http://10.1.21.14:4444/grid/register/ -nodeConfig "C:\TestOps\WebDriver\nodeconfig.json"
+java -jar -Dwebdriver.edge.driver="C:\Program Files\edgedriver\17134\MicrosoftWebDriver.exe" selenium-server-standalone-3.141.59.jar -role node -hub http://10.0.75.1:4444/grid/register/ -nodeConfig ".\nodeconfig.json"
+java -jar -Dwebdriver.ie.driver="C:\Program Files (x86)\ie11webdriver\IEDriverServer.exe" selenium-server-standalone-3.141.59.jar -role node -hub http://10.0.75.1:4444/grid/register/ -nodeConfig ".\nodeconfig.json"
+
+---------------------------linux---------------------------
+#view all system vars
+printenv
+
+#find directory
+find / -name "dir-name-here"
+
+readlink {path to link}
+
+
+grep -r '\/\*.*\*\/' | sed 's/.*\^//g' | sed 's/\$.*//g' > sedo.txt
+grep -rE '@Then|@Given|@When' | sed 's/.*\^//g' | sed 's/\$.*//g' > sedo.txt
+
+stepdefinitions location:
+/mnt/c/workspace/code/java_workspace/lto-test-automation-lib/
+/mnt/c/workspace/code/java_workspace/lto-test-automation-lib/src/main/java/au/com/qantas/loyalty/lto/stepdefinitions/
+WebBrowserStepDefinitions.java
+grep -E '@Then|@Given|@When' WebBrowserStepDefinitions.java | sed 's/.*\^//g' | sed 's/\$.*//g' | sed 's/\\//g' > sedo.txt
+grep -E '@Then|@Given|@When' "$file" | sed 's/.*\^//g' | sed 's/\$.*//g' | sed 's/\\//g' > docs/"$base".txt
+grep -lE '@Then|@Given|@When' ./src/main/java/au/com/qantas/loyalty/lto/stepdefinitions/ | sed 's/.*\^//g' | sed 's/\$.*//g' | sed 's/\\//g' > StepDefinitionsGuide.txt
+
+----------------------JIRA labels----------------
+TAF-Script
+
+
+--------------------windows cmd-----------------
+screen recorder - windows+g
+
+-------------------regex -----------------
+find with first and second occur with multi line - (?s)"company": {.*?(}).*?(})
+
+--------------------prettier.io------
+npx prettier --write .
+
+-------------git
+git push https://username:token@github.com/repo.git

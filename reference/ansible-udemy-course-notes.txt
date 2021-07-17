@@ -1,0 +1,60 @@
+ansible -i file --list-hosts - lists all hosts from the provided file
+
+By creating the ansible.cfg file with below content you dont have provide -i every time
+-----content------
+[defaults]
+inventory = ./dev
+------------------
+
+ansible --list-hosts
+  ansible --list-hosts all - lists all hosts
+  ansible --list-hosts group-name - lists all the hosts under the group
+  ansible --list-hosts hostname - list only the hostname
+  ansible --list-hosts * - lists all hosts
+  ansible --list-hosts app* - lists all hosts starts with name "app"
+  ansible --list-hosts !group name - lists all hosts except provided group name
+  ansible --list-hosts groupname1,groupname2 - lists all hosts under groupname1 and groupname2
+  ansible --list-hosts groupname[0] - lists the host at index 0 under provided gropu name
+
+refer more here:
+https://docs.ansible.com/ansible/latest/user_guide/intro_patterns.html
+
+ansible -m ping all - pings all the hosts
+
+ansible -m command -a "hostname" all  - execute hostname command in all hosts
+ansible -a "hostname" all  - since command is default module, execute hostname command in all hosts
+
+refer more here:
+https://docs.ansible.com/ansible/2.9/modules/modules_by_category.html
+
+ansible-playbook playbook.yml
+
+------playbook.yml content------
+---
+- hosts:loadbalancer
+  become:true
+  tasks:
+    - name: install load balancer
+      apt: name=nginx state=present update_cache=yes
+--------------------------------
+
+
+4 pillars
+  packages
+  source codes
+
+
+loops:
+------playbook.yml content------
+---
+- hosts:loadbalancer
+  become:true
+  tasks:
+    - name: install web components
+      apt: name={{item}} state=present update_cache=yes
+      with_items:
+        - apache2
+        - libapache2-mod-wsgi
+        - python-pip
+        - python-virtualenv
+--------------------------------

@@ -1,0 +1,3 @@
+My biggest wish it to get a Serenity report showing only the failures. Sometimes we have thousands of scenarios and just a few failures spread out amongst all the green and it is time consuming to have to individually locate and drill into the failures.
+When tried to open the results of a test scenario with lots of results, it takes ages to load.
+Search functionality to filter the reports across the scenarios not just index page
